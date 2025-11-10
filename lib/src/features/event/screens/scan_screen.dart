@@ -39,7 +39,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scanWindow = Rect.fromCenter(center: MediaQuery.sizeOf(context).center(Offset.zero), width: SizerHelper.w(70), height: SizerHelper.w(70));
+    final scanWindow = Rect.fromCenter(
+      center: MediaQuery.sizeOf(context).center(Offset.zero),
+      width: SizerHelper.w(70),
+      height: SizerHelper.w(70),
+    );
 
     return Scaffold(
       body: Stack(
@@ -68,6 +72,59 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                   borderWidth: 5,
                   cutOutWidth: SizerHelper.w(70),
                   cutOutHeight: SizerHelper.w(70),
+                ),
+              ),
+            ),
+          ),
+          // Bouton de retour en bas
+          Positioned(
+            bottom: SizerHelper.w(10),
+            left: SizerHelper.w(10),
+            right: SizerHelper.w(10),
+            child: SafeArea(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(SizerHelper.w(4)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      NavigationUtil.pop(context);
+                    },
+                    borderRadius: BorderRadius.circular(SizerHelper.w(4)),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: SizerHelper.w(4),
+                        horizontal: SizerHelper.w(6),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.arrow_back,
+                            color: AppColors.primaryColor,
+                            size: SizerHelper.w(6),
+                          ),
+                          SizedBox(width: SizerHelper.w(3)),
+                          MediumText(
+                            "Retour à l'accueil",
+                            color: AppColors.primaryColor,
+                            fontSize: SizerHelper.sp(16),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -143,11 +200,13 @@ class QrScannerOverlayShape extends ShapeBorder {
   }) : cutOutWidth = cutOutWidth ?? cutOutSize ?? 250,
        cutOutHeight = cutOutHeight ?? cutOutSize ?? 250 {
     assert(
-      borderLength <= min(this.cutOutWidth, this.cutOutHeight) / 2 + borderWidth * 2,
+      borderLength <=
+          min(this.cutOutWidth, this.cutOutHeight) / 2 + borderWidth * 2,
       "Border can't be larger than ${min(this.cutOutWidth, this.cutOutHeight) / 2 + borderWidth * 2}",
     );
     assert(
-      (cutOutWidth == null && cutOutHeight == null) || (cutOutSize == null && cutOutWidth != null && cutOutHeight != null),
+      (cutOutWidth == null && cutOutHeight == null) ||
+          (cutOutSize == null && cutOutWidth != null && cutOutHeight != null),
       'Use only cutOutWidth and cutOutHeight or only cutOutSize',
     );
   }
@@ -192,9 +251,16 @@ class QrScannerOverlayShape extends ShapeBorder {
     final borderWidthSize = width / 2;
     final height = rect.height;
     final borderOffset = borderWidth / 2;
-    final mBorderLength = borderLength > min(cutOutHeight, cutOutHeight) / 2 + borderWidth * 2 ? borderWidthSize / 2 : borderLength;
-    final mCutOutWidth = cutOutWidth < width ? cutOutWidth : width - borderOffset;
-    final mCutOutHeight = cutOutHeight < height ? cutOutHeight : height - borderOffset;
+    final mBorderLength =
+        borderLength > min(cutOutHeight, cutOutHeight) / 2 + borderWidth * 2
+        ? borderWidthSize / 2
+        : borderLength;
+    final mCutOutWidth = cutOutWidth < width
+        ? cutOutWidth
+        : width - borderOffset;
+    final mCutOutHeight = cutOutHeight < height
+        ? cutOutHeight
+        : height - borderOffset;
 
     final backgroundPaint = Paint()
       ..color = overlayColor
@@ -212,7 +278,11 @@ class QrScannerOverlayShape extends ShapeBorder {
 
     final cutOutRect = Rect.fromLTWH(
       rect.left + width / 2 - mCutOutWidth / 2 + borderOffset,
-      -cutOutBottomOffset + rect.top + height / 2 - mCutOutHeight / 2 + borderOffset,
+      -cutOutBottomOffset +
+          rect.top +
+          height / 2 -
+          mCutOutHeight / 2 +
+          borderOffset,
       mCutOutWidth - borderOffset * 2,
       mCutOutHeight - borderOffset * 2,
     );
@@ -222,12 +292,24 @@ class QrScannerOverlayShape extends ShapeBorder {
       ..drawRect(rect, backgroundPaint)
       // Draw top right corner
       ..drawRRect(
-        RRect.fromLTRBAndCorners(cutOutRect.right - mBorderLength, cutOutRect.top, cutOutRect.right, cutOutRect.top + mBorderLength, topRight: Radius.circular(borderRadius)),
+        RRect.fromLTRBAndCorners(
+          cutOutRect.right - mBorderLength,
+          cutOutRect.top,
+          cutOutRect.right,
+          cutOutRect.top + mBorderLength,
+          topRight: Radius.circular(borderRadius),
+        ),
         borderPaint,
       )
       // Draw top left corner
       ..drawRRect(
-        RRect.fromLTRBAndCorners(cutOutRect.left, cutOutRect.top, cutOutRect.left + mBorderLength, cutOutRect.top + mBorderLength, topLeft: Radius.circular(borderRadius)),
+        RRect.fromLTRBAndCorners(
+          cutOutRect.left,
+          cutOutRect.top,
+          cutOutRect.left + mBorderLength,
+          cutOutRect.top + mBorderLength,
+          topLeft: Radius.circular(borderRadius),
+        ),
         borderPaint,
       )
       // Draw bottom right corner
@@ -243,15 +325,28 @@ class QrScannerOverlayShape extends ShapeBorder {
       )
       // Draw bottom left corner
       ..drawRRect(
-        RRect.fromLTRBAndCorners(cutOutRect.left, cutOutRect.bottom - mBorderLength, cutOutRect.left + mBorderLength, cutOutRect.bottom, bottomLeft: Radius.circular(borderRadius)),
+        RRect.fromLTRBAndCorners(
+          cutOutRect.left,
+          cutOutRect.bottom - mBorderLength,
+          cutOutRect.left + mBorderLength,
+          cutOutRect.bottom,
+          bottomLeft: Radius.circular(borderRadius),
+        ),
         borderPaint,
       )
-      ..drawRRect(RRect.fromRectAndRadius(cutOutRect, Radius.circular(borderRadius)), boxPaint)
+      ..drawRRect(
+        RRect.fromRectAndRadius(cutOutRect, Radius.circular(borderRadius)),
+        boxPaint,
+      )
       ..restore();
   }
 
   @override
   ShapeBorder scale(double t) {
-    return QrScannerOverlayShape(borderColor: borderColor, borderWidth: borderWidth, overlayColor: overlayColor);
+    return QrScannerOverlayShape(
+      borderColor: borderColor,
+      borderWidth: borderWidth,
+      overlayColor: overlayColor,
+    );
   }
 }

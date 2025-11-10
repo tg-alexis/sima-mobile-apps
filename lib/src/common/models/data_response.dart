@@ -1,5 +1,3 @@
-
-
 // Importez vos modèles, mais ils ne sont plus nécessaires ici !
 // C'est la preuve que la classe est maintenant découplée.
 
@@ -15,7 +13,14 @@ class DataResponse<T> {
   final bool? error;
 
   // On crée un constructeur privé pour forcer l'utilisation de la factory 'fromJson'
-  DataResponse._({this.item, this.items, this.message, this.errorStatus, this.statusCode, this.error});
+  DataResponse._({
+    this.item,
+    this.items,
+    this.message,
+    this.errorStatus,
+    this.statusCode,
+    this.error,
+  });
 
   factory DataResponse.failure(String message) {
     return DataResponse._(
@@ -54,10 +59,17 @@ class DataResponse<T> {
       }
     }
 
-    var errorStatus = json['error'] != null ? ErrorStatus.fromJson(json['error']) : null;
+    var errorStatus = json['error'] != null
+        ? ErrorStatus.fromJson(json['error'])
+        : null;
 
     // On retourne la nouvelle instance immuable
-    return DataResponse._(item: parsedItem, items: parsedItems, message: message, errorStatus: errorStatus);
+    return DataResponse._(
+      item: parsedItem,
+      items: parsedItems,
+      message: message,
+      errorStatus: errorStatus,
+    );
   }
 
   // --- CHANGEMENT 3: La fonction 'when' améliorée (Objectif #3) ---
@@ -76,7 +88,10 @@ class DataResponse<T> {
     required Function(String? message) failure,
   }) {
     if (errorStatus != null || error == true) {
-      failure(errorStatus?.message ?? "Désolé, nous n'avons pu traiter votre demande !");
+      failure(
+        errorStatus?.message ??
+            "Désolé, nous n'avons pu traiter votre demande !",
+      );
       return;
     }
 
@@ -95,11 +110,18 @@ class ErrorStatus {
   int? status;
   String? code;
   String? message;
-  Null? details;
+  Null details;
   String? requestId;
   String? timestamp;
 
-  ErrorStatus({this.status, this.code, this.message, this.details, this.requestId, this.timestamp});
+  ErrorStatus({
+    this.status,
+    this.code,
+    this.message,
+    this.details,
+    this.requestId,
+    this.timestamp,
+  });
 
   ErrorStatus.fromJson(Map<String, dynamic> json) {
     status = json['status'];

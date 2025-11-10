@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../styles/styles.dart';
 import '../widgets.dart';
 
 class MediumText extends StatelessWidget {
@@ -17,18 +16,20 @@ class MediumText extends StatelessWidget {
   final TextAlign? textAlign;
   final FontStyle? fontStyle;
 
-  const MediumText(this.text,
-      {super.key,
-      this.textStyle,
-      this.color,
-      this.fontSize,
-      this.maxLines,
-      this.decoration,
-      this.fontWeight,
-      this.textOverflow,
-      this.textAlign,
-      this.decorationColor,
-      this.fontStyle});
+  const MediumText(
+    this.text, {
+    super.key,
+    this.textStyle,
+    this.color,
+    this.fontSize,
+    this.maxLines,
+    this.decoration,
+    this.fontWeight,
+    this.textOverflow,
+    this.textAlign,
+    this.decorationColor,
+    this.fontStyle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,8 @@ class MediumText extends StatelessWidget {
       text,
       maxLines: maxLines,
       textAlign: textAlign,
-      textStyle: textStyle ??
+      textStyle:
+          textStyle ??
           TextStyle(
             color: color,
             fontSize: fontSize ?? 16.sp,

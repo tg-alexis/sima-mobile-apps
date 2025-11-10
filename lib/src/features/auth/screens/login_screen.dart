@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../gen/assets.gen.dart';
 import '../../../common/common.dart';
+import '../../../styles/colors/colors.dart';
 import '../../../utils/utils.dart';
 import '../../home/home.dart';
 import '../auth.dart';
@@ -17,6 +18,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   late AuthController _authController;
   final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -32,33 +34,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+      body: BackgroundScreen(
+        useSafeArea: true,
         child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(left: SizerHelper.w(6), right: SizerHelper.w(6)),
-            child: Column(
-              children: [
-                Spacers.min,
-                Assets.images.logoSima.image(width: SizerHelper.w(30)),
-                Spacers.large,
-                TitleText("Bienvenue", fontSize: SizerHelper.sp(20)),
-                Spacers.min,
-                const MediumText("Entrez vos identifiants afin d’accéder à votre compte", color: Colors.grey, textAlign: TextAlign.center),
-                Spacers.medium,
-                BasicInput(emailController, hintText: "Email", focusNode: _emailFocus, textInputType: TextInputType.emailAddress, nextInputForm: true),
-                PasswordInput(passwordController, hintText: "Mot de passe"),
-                Spacers.min,
-                InkWell(child: const MediumText("Mot de passe oublié ?", textAlign: TextAlign.center)),
-                Spacers.sw6,
-                SubmitButton(
-                  text: "Se connecter",
-                  onTap: () {
-                    if (checkForm()) login();
-                  },
+          child: Column(
+            children: [
+              Spacers.sw20,
+              // Logo SIMA
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Assets.images.logoSima.image(width: SizerHelper.w(35)),
+                ],
+              ),
+              Spacers.sw8,
+              TitleText("BIENVENUE", fontSize: SizerHelper.sp(25)),
+              Spacers.sw3,
+              // Sous-titre
+              BodyText(
+                "Entrez vos identifiants afin d’accéder\nà votre compte",
+                textAlign: TextAlign.center,
+                fontSize: SizerHelper.sp(16),
+                color: AppColors.darkerGrayColor,
+              ),
+              Spacers.sw10,
+              // Champ Email
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: SizerHelper.w(5),
+                  vertical: SizerHelper.w(1),
                 ),
-              ],
-            ),
+                child: Column(
+                  children: [
+                    BasicInput(
+                      emailController,
+                      hintText: "Email",
+                      focusNode: _emailFocus,
+                      textInputType: TextInputType.emailAddress,
+                      nextInputForm: true,
+                    ),
+                    Spacers.sw2,
+                    PasswordInput(
+                      passwordController,
+                      hintText: "Mot de passe",
+                      focusNode: _passwordFocus,
+                    ),
+                    Spacers.sw2,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          // Action mot de passe oublié
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            vertical: SizerHelper.w(1),
+                          ),
+                          child: MediumText(
+                            "Mot de passe oublié?",
+                            color: AppColors.primaryColor,
+                            fontSize: SizerHelper.sp(13),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Spacers.sw5,
+                    SubmitButton(
+                      text: "Se connecter",
+                      onTap: () {
+                        if (checkForm()) login();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -67,11 +118,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   bool checkForm() {
     if (emailController.text.trim().isEmpty) {
-      Dialogs.displayInfoDialog(context, text: "Saisissez votre email", callback: () {});
+      Dialogs.displayInfoDialog(
+        context,
+        text: "Saisissez votre email",
+        callback: () {},
+      );
       return false;
     }
     if (passwordController.text.trim().isEmpty) {
-      Dialogs.displayInfoDialog(context, text: "Saisissez votre mot de passe", callback: () {});
+      Dialogs.displayInfoDialog(
+        context,
+        text: "Saisissez votre mot de passe",
+        callback: () {},
+      );
       return false;
     }
     return true;
@@ -79,11 +138,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void login() async {
     Dialogs.showLoadingDialog(context);
-    var response = await _authController.login(login: emailController.text.trim().toLowerCase(), password: passwordController.text.trim());
-    if(!mounted) return;
+    var response = await _authController.login(
+      login: emailController.text.trim().toLowerCase(),
+      password: passwordController.text.trim(),
+    );
+    if (!mounted) return;
     NavigationUtil.pop(context);
     if (!response) {
-      Dialogs.displayInfoDialog(context, text: _authController.errorMessage ?? "La connexion a échoué.", isError: true);
+      Dialogs.displayInfoDialog(
+        context,
+        text: _authController.errorMessage ?? "La connexion a échoué.",
+        isError: true,
+      );
       return;
     }
 

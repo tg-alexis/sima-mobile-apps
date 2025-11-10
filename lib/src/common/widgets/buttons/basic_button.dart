@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../styles/colors/colors.dart';
 import '../../../utils/utils.dart';
 import '../widgets.dart';
 
@@ -36,12 +35,17 @@ class BasicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (icon == null && showToLeft == true || icon == null && showToRight == true) {
-      throw Exception("icon can't be null when showToLeft or showToRight is true");
+    if (icon == null && showToLeft == true ||
+        icon == null && showToRight == true) {
+      throw Exception(
+        "icon can't be null when showToLeft or showToRight is true",
+      );
     }
 
     if (showToLeft == true && showToRight == true) {
-      throw Exception("showToLeft and showToRight can't be true at the same time");
+      throw Exception(
+        "showToLeft and showToRight can't be true at the same time",
+      );
     }
 
     return GestureDetector(
@@ -56,9 +60,28 @@ class BasicButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null && showToLeft == true) ...{Icon(icon, color: iconColor ?? Colors.white, size: SizerHelper.w(5)), Spacers.sw3},
-            TitleText(text, textAlign: TextAlign.center, color: textColor, fontSize: fontSize),
-            if (icon != null && showToRight == true) ...{Spacers.sw3, Icon(icon, color: iconColor ?? Colors.white, size: SizerHelper.w(5))},
+            if (icon != null && showToLeft == true) ...{
+              Icon(
+                icon,
+                color: iconColor ?? Colors.white,
+                size: SizerHelper.w(5),
+              ),
+              Spacers.sw3,
+            },
+            TitleText(
+              text,
+              textAlign: TextAlign.center,
+              color: textColor,
+              fontSize: fontSize,
+            ),
+            if (icon != null && showToRight == true) ...{
+              Spacers.sw3,
+              Icon(
+                icon,
+                color: iconColor ?? Colors.white,
+                size: SizerHelper.w(5),
+              ),
+            },
           ],
         ),
       ),

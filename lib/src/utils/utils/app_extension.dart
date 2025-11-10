@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../../common/common.dart';
 import '../../datasource/datasource.dart';
 // import '../../features/features.dart';
+import '../../features/auth/auth.dart';
 import '../utils.dart';
 
 class AppExtension {
@@ -15,14 +16,27 @@ class AppExtension {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BodyText("Vous êtes sur le point de vous déconnecter! Confirmez-vous ?", textAlign: TextAlign.center,),
+          BodyText(
+            "Vous êtes sur le point de vous déconnecter! Confirmez-vous ?",
+            textAlign: TextAlign.center,
+          ),
           Spacers.sw8,
-          SubmitButton(text: "Deconnexion", color: Color(0xFFF06868), textColor: Colors.white, onTap: (){
-            SharedPreferencesService.clearAll();
-            // NavigationUtil.pushAndRemoveUntil(context, const LoginScreen());
-          },),
+          SubmitButton(
+            text: "Deconnexion",
+            color: Color(0xFFF06868),
+            textColor: Colors.white,
+            onTap: () {
+              SharedPreferencesService.clearAll();
+              NavigationUtil.pushAndRemoveUntil(context, const LoginScreen());
+            },
+          ),
           Spacers.min,
-          SubmitButton(text: "Annuler", color: Colors.white, textColor: Colors.black, onTap: ()=> NavigationUtil.pop(context),),
+          SubmitButton(
+            text: "Annuler",
+            color: Colors.white,
+            textColor: Colors.black,
+            onTap: () => NavigationUtil.pop(context),
+          ),
         ],
       ),
     );

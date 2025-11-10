@@ -10,10 +10,17 @@ class StartBackgroundScreen extends ConsumerStatefulWidget {
   final EdgeInsets? padding;
   final Color? color;
 
-  const StartBackgroundScreen({super.key, required this.child, this.useSafeArea = false, this.padding, this.color});
+  const StartBackgroundScreen({
+    super.key,
+    required this.child,
+    this.useSafeArea = false,
+    this.padding,
+    this.color,
+  });
 
   @override
-  ConsumerState<StartBackgroundScreen> createState() => _BackgroundScreenState();
+  ConsumerState<StartBackgroundScreen> createState() =>
+      _BackgroundScreenState();
 }
 
 class _BackgroundScreenState extends ConsumerState<StartBackgroundScreen> {
@@ -23,7 +30,15 @@ class _BackgroundScreenState extends ConsumerState<StartBackgroundScreen> {
       children: [
         Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0XFFA157A6), AppColors.purpleColor], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.primaryColor.withValues(alpha: 0.3),
+                AppColors.primaryColor.withValues(alpha: 0.1),
+                Colors.transparent,
+              ],
+            ),
           ),
         ),
         Positioned(
@@ -34,20 +49,35 @@ class _BackgroundScreenState extends ConsumerState<StartBackgroundScreen> {
           child: Container(
             height: SizerHelper.w(50),
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Color(0XFFA157A6), AppColors.purpleColor], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(SizerHelper.w(6)), bottomRight: Radius.circular(SizerHelper.w(6))),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.primaryColor.withValues(alpha: 0.3),
+                  AppColors.primaryColor.withValues(alpha: 0.1),
+                  Colors.transparent,
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(SizerHelper.w(6)),
+                bottomRight: Radius.circular(SizerHelper.w(6)),
+              ),
             ),
           ),
         ),
         widget.useSafeArea
             ? SafeArea(
                 child: Padding(
-                  padding: widget.padding ?? EdgeInsets.symmetric(horizontal: SizerHelper.w(5)),
+                  padding:
+                      widget.padding ??
+                      EdgeInsets.symmetric(horizontal: SizerHelper.w(5)),
                   child: widget.child,
                 ),
               )
             : Padding(
-                padding: widget.padding ?? EdgeInsets.symmetric(horizontal: SizerHelper.w(5)),
+                padding:
+                    widget.padding ??
+                    EdgeInsets.symmetric(horizontal: SizerHelper.w(5)),
                 child: widget.child,
               ),
       ],

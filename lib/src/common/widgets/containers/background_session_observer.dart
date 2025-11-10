@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/utils.dart';
-
 class BackgroundSessionObserver extends StatefulWidget {
   final Widget child;
 
-  const BackgroundSessionObserver({
-    super.key,
-    required this.child,
-  });
+  const BackgroundSessionObserver({super.key, required this.child});
 
   @override
-  BackgroundSessionObserverState createState() => BackgroundSessionObserverState();
+  BackgroundSessionObserverState createState() =>
+      BackgroundSessionObserverState();
 }
 
-class BackgroundSessionObserverState extends State<BackgroundSessionObserver> with WidgetsBindingObserver {
+class BackgroundSessionObserverState extends State<BackgroundSessionObserver>
+    with WidgetsBindingObserver {
   bool isLoginScreenShown = false;
 
   @override

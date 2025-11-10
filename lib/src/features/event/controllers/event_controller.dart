@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../event.dart';
 
-final eventControllerProvider = ChangeNotifierProvider<EventController>((ref) => EventController());
+final eventControllerProvider = ChangeNotifierProvider<EventController>(
+  (ref) => EventController(),
+);
 
 class EventController extends ChangeNotifier {
   final EventRepositoryImpl _eventRepository = EventRepositoryImpl();
@@ -14,6 +16,7 @@ class EventController extends ChangeNotifier {
   EventModel? _event;
   String? _errorMessage;
   String? _searchValue;
+  int _totalScannedPasses = 0;
 
   set event(EventModel? event) {
     _event = event;
@@ -80,7 +83,10 @@ class EventController extends ChangeNotifier {
     }
 
     try {
-      var response = await _eventRepository.checkAccess(eventId: _event!.id!, attendeeId: attendeeId);
+      var response = await _eventRepository.checkAccess(
+        eventId: _event!.id!,
+        attendeeId: attendeeId,
+      );
 
       response.when(
         failure: (String? message) {
@@ -88,6 +94,7 @@ class EventController extends ChangeNotifier {
         },
         onItem: (AttendeeModel item) {
           result = true;
+          _totalScannedPasses++;
         },
       );
     } on Exception catch (e) {
@@ -99,12 +106,26 @@ class EventController extends ChangeNotifier {
     return result;
   }
 
-  List<EventModel> get listEvents =>
-      _searchValue == null ? _listEvents : _listEvents.where((element) => element.name!.toLowerCase().contains(_searchValue!.toLowerCase())).toList();
+  void incrementScannedPasses() {
+    _totalScannedPasses++;
+    notifyListeners();
+  }
+
+  List<EventModel> get listEvents => _searchValue == null
+      ? _listEvents
+      : _listEvents
+            .where(
+              (element) => element.name!.toLowerCase().contains(
+                _searchValue!.toLowerCase(),
+              ),
+            )
+            .toList();
 
   bool get isLoading => _isLoading;
 
   EventModel? get event => _event;
 
   String? get errorMessage => _errorMessage;
+
+  int get totalScannedPasses => _totalScannedPasses;
 }

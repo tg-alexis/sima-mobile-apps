@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../gen/assets.gen.dart';
 import '../../../utils/utils.dart';
 import '../../common.dart';
 
@@ -31,7 +30,10 @@ class HeaderContainer extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(SizerHelper.w(6)), bottomRight: Radius.circular(SizerHelper.w(6))),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(SizerHelper.w(6)),
+          bottomRight: Radius.circular(SizerHelper.w(6)),
+        ),
       ),
       padding: EdgeInsets.symmetric(vertical: SizerHelper.w(4)),
       child: Stack(
@@ -67,10 +69,7 @@ class HeaderContainer extends StatelessWidget {
               right: 0,
               child:
                   actionWidget ??
-                  GestureDetector(
-                    onTap: actionCallback,
-                    child: Container(),
-                  ),
+                  GestureDetector(onTap: actionCallback, child: Container()),
             ),
           ),
         ],

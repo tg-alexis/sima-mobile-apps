@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../styles/styles.dart';
 import '../widgets.dart';
 
 class BodyText extends StatelessWidget {
@@ -16,7 +15,19 @@ class BodyText extends StatelessWidget {
   final double? height;
   final TextOverflow? overflow;
 
-  const BodyText(this.text, {super.key, this.textStyle, this.textAlign, this.color, this.fontSize, this.decoration, this.maxLines, this.fontWeight, this.height, this.overflow});
+  const BodyText(
+    this.text, {
+    super.key,
+    this.textStyle,
+    this.textAlign,
+    this.color,
+    this.fontSize,
+    this.decoration,
+    this.maxLines,
+    this.fontWeight,
+    this.height,
+    this.overflow,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +35,8 @@ class BodyText extends StatelessWidget {
       text,
       textAlign: textAlign,
       maxLines: maxLines,
-      textStyle: textStyle ??
+      textStyle:
+          textStyle ??
           TextStyle(
             color: color,
             fontSize: fontSize ?? 16.sp,

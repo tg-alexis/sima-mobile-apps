@@ -15,7 +15,17 @@ class InputForm extends StatelessWidget {
   final Color? backgroundColor;
   final EdgeInsets? padding;
 
-  const InputForm({super.key, required this.child, this.text, this.textColor, this.backgroundColor, this.height, this.padding, this.showIsRequired = true, this.isRequired = true});
+  const InputForm({
+    super.key,
+    required this.child,
+    this.text,
+    this.textColor,
+    this.backgroundColor,
+    this.height,
+    this.padding,
+    this.showIsRequired = true,
+    this.isRequired = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +42,11 @@ class InputForm extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     text: text,
-                    style: TextStyle(color: textColor ?? Colors.black, fontSize: 15.sp, fontWeight: FontWeight.w400),
+                    style: TextStyle(
+                      color: textColor ?? Colors.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
                     children: [
                       TextSpan(
                         text: showIsRequired
@@ -40,7 +54,11 @@ class InputForm extends StatelessWidget {
                                   ? ' *'
                                   : ""
                             : "",
-                        style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ],
                   ),
@@ -53,7 +71,7 @@ class InputForm extends StatelessWidget {
           decoration: BoxDecoration(
             color: backgroundColor ?? Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(SizerHelper.w(3))),
-            border: Border.all(color: AppColors.greyColor),
+            border: Border.all(color: AppColors.darkerGrayColor),
           ),
           child: Padding(
             padding: padding ?? EdgeInsets.only(left: SizerHelper.w(2)),
