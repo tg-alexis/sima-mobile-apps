@@ -225,7 +225,6 @@ class _BasicTextFormState extends State<BasicTextForm> {
             children: [
               Spacers.sw1,
               BodyText(widget.isRequired == false ? "" : _errorMessage ?? "", color: Colors.red, fontSize: 13),
-              Spacers.sw1,
             ],
           ),
         ),

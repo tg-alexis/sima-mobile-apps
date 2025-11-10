@@ -10,6 +10,8 @@ class AuthController extends ChangeNotifier {
   final AuthRepositoryImpl _authRepository = AuthRepositoryImpl();
   UserModel? _userModel;
   String? _errorMessage;
+  List<Profile> _profiles = [];
+  List<UserModel> _users = [];
 
   Future<void> checkUserLoggedIn() async {
     _userModel ??= await SharedPreferencesService.getUser();
@@ -29,6 +31,26 @@ class AuthController extends ChangeNotifier {
     } else {
       statusResponse = await _getUserInfos();
     }
+
+    notifyListeners();
+
+    return statusResponse;
+  }
+
+  Future<bool> createUser(UserModel body) async {
+    bool statusResponse = false;
+    _errorMessage = null;
+    notifyListeners();
+
+    var response = await _authRepository.createUser(body);
+
+    response.when(
+      failure: (String? message) {},
+      onItem: (item) {
+        statusResponse = true;
+        getUsers();
+      },
+    );
 
     notifyListeners();
 
@@ -58,6 +80,44 @@ class AuthController extends ChangeNotifier {
     return statusResponse;
   }
 
+  Future<void> getProfiles() async {
+    if (_profiles.isNotEmpty) return;
+
+    _errorMessage = null;
+    notifyListeners();
+
+    var response = await _authRepository.getProfiles();
+
+    response.when(
+      onItems: (items) {
+        _profiles = items;
+      },
+      failure: (String? message) {
+        _errorMessage = message;
+      },
+    );
+
+    notifyListeners();
+  }
+
+  Future<void> getUsers() async {
+    _errorMessage = null;
+    notifyListeners();
+
+    var response = await _authRepository.getUsers();
+
+    response.when(
+      onItem: (item) {
+        _users = item.result ?? [];
+      },
+      failure: (String? message) {
+        _errorMessage = message;
+      },
+    );
+
+    notifyListeners();
+  }
+
   void logout() async {
     _userModel = null;
     notifyListeners();
@@ -66,4 +126,8 @@ class AuthController extends ChangeNotifier {
   UserModel? get user => _userModel;
 
   String? get errorMessage => _errorMessage;
+
+  List<UserModel> get users => _users;
+
+  List<Profile> get profiles => _profiles;
 }

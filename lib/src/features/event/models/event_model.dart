@@ -70,7 +70,6 @@ class EventModel {
 
 class PaginationResult {
   int? currentPage;
-  Null? previousPage;
   int? nextPage;
   int? count;
   int? totalCount;
@@ -78,7 +77,6 @@ class PaginationResult {
 
   PaginationResult(
       {this.currentPage,
-        this.previousPage,
         this.nextPage,
         this.count,
         this.totalCount,
@@ -86,7 +84,6 @@ class PaginationResult {
 
   PaginationResult.fromJson(Map<String, dynamic> json) {
     currentPage = json['currentPage'];
-    previousPage = json['previousPage'];
     nextPage = json['nextPage'];
     count = json['count'];
     totalCount = json['totalCount'];
@@ -96,7 +93,6 @@ class PaginationResult {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['currentPage'] = currentPage;
-    data['previousPage'] = previousPage;
     data['nextPage'] = nextPage;
     data['count'] = count;
     data['totalCount'] = totalCount;

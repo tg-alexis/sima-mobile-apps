@@ -16,10 +16,19 @@ abstract class ApiClient {
   @POST("/api/v2/attendees/check-access")
   Future<DataResponse<AttendeeModel>> checkAccess(@Body() AttendeeModel body);
 
+  @POST("/api/v2/users")
+  Future<DataResponse<UserModel>> createUser(@Body() UserModel body);
+
   @GET("/api/v2/auth/me")
   Future<DataResponse<UserModel>> userInfos();
 
   @GET("/api/v2/events")
   Future<DataResponse<ListEventModel>> getEvents();
+
+  @GET("/api/v2/profiles")
+  Future<DataResponse<Profile>> getProfiles();
+
+  @GET("/api/v2/users?all=true")
+  Future<DataResponse<ListUserModel>> getUsers();
 
 }
