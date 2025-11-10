@@ -1,0 +1,46 @@
+name: sima
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  mobile_scanner: any
+  jwt_decode: any
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  sizer: any
+  shared_preferences: any
+  flutter_spinkit: any
+  dio: any
+  retrofit: any
+  pretty_dio_logger: any
+  shimmer: any
+  expandable_page_view: any
+  very_good_infinite_list: any
+  flutter_riverpod: any
+  permission_handler: any
+  gap: any
+  event_bus: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: any
+  flutter_gen_runner: any
+  flutter_lints: any
+  retrofit_generator: any
+
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/
