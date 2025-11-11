@@ -165,16 +165,22 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
   }
 
   void _requestCameraPermission() async {
-    var result = await requestPermission(Permission.camera);
+    // Vérifier le statut de la permission (déjà demandée au démarrage)
+    var result = await statusPermission(Permission.camera);
     if (!mounted) return;
 
     if (!result) {
+      // Si la permission n'est toujours pas accordée, proposer d'ouvrir les paramètres
       Dialogs.displayInfoDialog(
         context,
-        text: "Veuillez autoriser l'accès à la caméra pour scanner le code bar",
-        callback: () {
+        text:
+            "L'accès à la caméra est nécessaire pour scanner les QR codes. Veuillez l'activer dans les paramètres.",
+        callback: () async {
+          await openAppSettings();
+          if (!mounted) return;
           NavigationUtil.pop(context);
         },
+        isError: true,
       );
       return;
     }

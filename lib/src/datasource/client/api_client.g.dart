@@ -82,6 +82,36 @@ class _ApiClient implements ApiClient {
   }
 
   @override
+  Future<DataResponse<StatisticsModel>> getStatistics() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<DataResponse<StatisticsModel>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/v2/statistic/access-statistics',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late DataResponse<StatisticsModel> _value;
+    try {
+      _value = DataResponse<StatisticsModel>.fromJson(
+        _result.data!,
+        (json) => StatisticsModel.fromJson(json as Map<String, dynamic>),
+      );
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<DataResponse<UserModel>> createUser(UserModel body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

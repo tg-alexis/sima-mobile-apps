@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../gen/assets.gen.dart';
-import '../../../utils/navigation/navigation.dart';
+import '../../../common/common.dart';
+import '../../../utils/utils.dart';
 import '../../features.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -15,10 +17,9 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
-  late AuthController _authController;
-
   @override
   void initState() {
+    super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -27,12 +28,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         systemNavigationBarColor: Colors.white,
       ),
     );
-    _authController = ref.read(authControllerProvider);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initPreferences();
     });
-    super.initState();
   }
 
   @override
@@ -43,16 +42,86 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void initPreferences() async {
-    Future.delayed(Duration(seconds: 2));
-    await _authController.checkUserLoggedIn();
+    // Attendre 2 secondes pour afficher le logo
+    await Future.delayed(Duration(seconds: 2));
 
     if (!mounted) return;
 
-    if (_authController.user != null) {
+    // Demander les permissions nécessaires
+    await _requestPermissions();
+
+    if (!mounted) return;
+
+    // Vérifier si l'utilisateur est déjà connecté
+    final authController = ref.read(authControllerProvider);
+    await authController.checkUserLoggedIn();
+
+    if (!mounted) return;
+
+    if (authController.user != null) {
       NavigationUtil.pushReplacement(context, HomeScreen());
       return;
     }
 
     NavigationUtil.pushReplacement(context, LoginScreen());
+  }
+
+  Future<void> _requestPermissions() async {
+    // Demander la permission de la caméra
+    final cameraStatus = await requestPermission(Permission.camera);
+
+    if (!cameraStatus) {
+      // Si la permission est refusée, afficher un dialog informatif
+      if (!mounted) return;
+
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Row(
+              children: [
+                Icon(Icons.camera_alt, color: Colors.orange),
+                SizedBox(width: SizerHelper.w(2)),
+                Expanded(
+                  child: BodyText(
+                    "Permission caméra",
+                    fontSize: SizerHelper.sp(18),
+                  ),
+                ),
+              ],
+            ),
+            content: BodyText(
+              "L'accès à la caméra est nécessaire pour scanner les QR codes. Vous pouvez activer cette permission plus tard dans les paramètres de votre appareil.",
+              fontSize: SizerHelper.sp(14),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  // Ouvrir les paramètres de l'application
+                  await openAppSettings();
+                },
+                child: BodyText(
+                  "Paramètres",
+                  color: Colors.blue,
+                  fontSize: SizerHelper.sp(14),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: BodyText(
+                  "Plus tard",
+                  color: Colors.grey,
+                  fontSize: SizerHelper.sp(14),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

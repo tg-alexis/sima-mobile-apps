@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,7 +27,6 @@ class SearchInput extends ConsumerStatefulWidget {
 
 class _SearchInputState extends ConsumerState<SearchInput> {
   final TextEditingController _controller = TextEditingController();
-  Timer? _checkTypingTimer;
 
   @override
   void initState() {

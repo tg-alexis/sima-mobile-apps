@@ -7,91 +7,170 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../common/common.dart';
 import '../../event/event_bus.dart';
+import '../../features/auth/auth.dart';
 import '../datasource.dart';
 
 class ApiClientInstance {
   static ApiClient? _apiClient;
 
   static late Dio _dio;
+  static bool _isRefreshing = false;
 
   static Future<void> init({bool allowSelfSigned = true}) async {
     _dio = Dio();
 
     // Gestion SSL (DEV uniquement avec allowSelfSigned)
     if (allowSelfSigned) {
-      (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
-        client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      final adapter = IOHttpClientAdapter();
+
+      adapter.createHttpClient = () {
+        final client = HttpClient();
+        client.badCertificateCallback =
+            (X509Certificate cert, String host, int port) => true;
         return client;
       };
+
+      _dio.httpClientAdapter = adapter;
     }
 
     await setupDioClient();
   }
 
-  static Future<void> setupDioClient() async{
-    _dio.interceptors.add(PrettyDioLogger(requestBody: true, requestHeader: true, responseBody: true, logPrint: (o) => log(o.toString())));
+  static Future<void> setupDioClient() async {
+    _dio.interceptors.add(
+      PrettyDioLogger(
+        requestBody: true,
+        requestHeader: true,
+        responseBody: true,
+        logPrint: (o) => log(o.toString()),
+      ),
+    );
 
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-
           // Attach token if available
           var token = await SharedPreferencesService.getToken();
+          var refreshToken = await SharedPreferencesService.getRefreshToken();
           if (token != null) {
-            options.headers["Authorization"] = "Bearer $token";
+            options.path.contains('/refresh-token')
+                ? options.headers["Authorization"] = "Bearer $refreshToken"
+                : options.headers["Authorization"] = "Bearer $token";
           }
 
           return handler.next(options);
         },
         onError: (error, handler) async {
-
-
-          if (error.response?.statusCode == 401) {
+          if (error.requestOptions.path.contains('/refresh-token')) {
             EventBusInstance.instance.fire(LogoutEvent());
+            return handler.reject(error);
           }
 
-          return handler.reject(error);
+          if (error.response?.statusCode == 401 ||
+              error.response?.statusCode == 403) {
+            try {
+              final responseData = error.response?.data;
+              final message = responseData is Map<String, dynamic>
+                  ? responseData['message']?.toString()
+                  : null;
 
-          // // Check if error is 401 (Unauthorized)
-          // if (error.response?.statusCode == 401) {
-          //   final requestOptions = error.requestOptions;
-          //
-          //   if (requestOptions.uri.path.contains("sign-in")) {
-          //     return handler.reject(error);
-          //   }
-          //
-          //   // Prevent infinite loop: check if it's already a retry
-          //   final isRetry = requestOptions.headers['x-retry'] == true;
-          //   if (!isRetry) {
-          //     try {
-          //       // var refreshToken = await SharedPreferencesService.getRefreshToken();
-          //       // // Attempt token refresh
-          //       // DataResponse<UserTokenModel> userToken = await ApiClientInstance.instance.refreshToken(UserTokenModel(refreshToken: refreshToken));
-          //       // if (userToken.item != null) {
-          //       //   // Save new token
-          //       //   SharedPreferencesService.saveToken(userToken.item!.accessToken!);
-          //       //   SharedPreferencesService.saveRefreshToken(userToken.item!.refreshToken!);
-          //       //
-          //       //   // Update headers with new token and mark as retry
-          //       //   requestOptions.headers["Authorization"] = "Bearer ${userToken.item!.accessToken!}";
-          //       //   requestOptions.headers["x-retry"] = true;
-          //       //
-          //       //   // Retry the original request
-          //       //   final response = await _dio.fetch(requestOptions);
-          //       //   return handler.resolve(response);
-          //       // }
-          //     } catch (e) {
-          //       return handler.reject(error);
-          //     }
-          //   }
-          // }
-          //
-          // // Optional: handle 400 error
-          // if (error.response?.statusCode == 400) {
-          //   return handler.resolve(error.response!);
-          // }
-          //
-          // return handler.reject(error);
+              // Messages d'erreurs liées au token qui nécessitent un refresh
+              final tokenExpiredMessages = [
+                'Token expiré',
+                'Token expired',
+                'jwt expired',
+                'Token invalide',
+                'Invalid token',
+                'Token JWT expiré',
+                'Unauthorized',
+              ];
+
+              final shouldRefreshToken =
+                  tokenExpiredMessages.any(
+                    (msg) =>
+                        message?.toLowerCase().contains(msg.toLowerCase()) ==
+                        true,
+                  ) &&
+                  !_isRefreshing &&
+                  error.response?.statusCode == 401;
+
+              if (shouldRefreshToken) {
+                _isRefreshing = true;
+                try {
+                  var refreshToken =
+                      await SharedPreferencesService.getRefreshToken();
+                  if (refreshToken == null) {
+                    EventBusInstance.instance.fire(LogoutEvent());
+                    _isRefreshing = false;
+                    return handler.reject(error);
+                  }
+
+                  // Tenter de rafraîchir le token
+                  final refreshResponse = await _dio.post(
+                    '${ApiClientConstant.apiBaseUrl}/refresh-token',
+                    options: Options(
+                      headers: {'Authorization': 'Bearer $refreshToken'},
+                    ),
+                  );
+
+                  if (refreshResponse.statusCode == 200) {
+                    final newToken = UserTokenModel.fromJson(
+                      refreshResponse.data,
+                    );
+                    SharedPreferencesService.saveToken(newToken.accessToken);
+                    SharedPreferencesService.saveRefreshToken(
+                      newToken.refreshToken,
+                    );
+
+                    final originalRequest = error.requestOptions;
+                    final newAccessToken =
+                        await SharedPreferencesService.getToken();
+                    if (newAccessToken != null) {
+                      originalRequest.headers['Authorization'] =
+                          'Bearer $newAccessToken';
+
+                      // Relancer la requête originale
+                      final retryResponse = await _dio.fetch(originalRequest);
+                      _isRefreshing = false;
+                      return handler.resolve(retryResponse);
+                    }
+                  }
+                } catch (e) {
+                  EventBusInstance.instance.fire(LogoutEvent());
+                  _isRefreshing = false;
+                  return handler.reject(error);
+                }
+              } else {
+                // Si c'est une erreur de login, ne pas déclencher le logout
+                // et renvoyer un message générique
+                if (error.requestOptions.path.contains('/auth/login')) {
+                  final customError = DioException(
+                    requestOptions: error.requestOptions,
+                    response: Response(
+                      requestOptions: error.requestOptions,
+                      statusCode: 401,
+                      data: {
+                        'message':
+                            'Identifiants incorrects. Veuillez vérifier votre email et mot de passe.',
+                      },
+                    ),
+                    type: error.type,
+                  );
+                  return handler.reject(customError);
+                }
+
+                // Pour les autres erreurs 401/403, déclencher le logout
+                EventBusInstance.instance.fire(LogoutEvent());
+                _isRefreshing = false;
+                return handler.reject(error);
+              }
+            } catch (e) {
+              EventBusInstance.instance.fire(LogoutEvent());
+              _isRefreshing = false;
+              return handler.reject(error);
+            }
+          }
+          return handler.reject(error);
         },
         onResponse: (response, handler) {
           return handler.resolve(response);

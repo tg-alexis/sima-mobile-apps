@@ -9,7 +9,14 @@ class CancelButton extends StatelessWidget {
   final bool isEnabled;
   final Color? color;
 
-  const CancelButton({super.key, required this.text, this.textColor, required this.onTap, this.isEnabled = true, this.color});
+  const CancelButton({
+    super.key,
+    required this.text,
+    this.textColor,
+    required this.onTap,
+    this.isEnabled = true,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,7 @@ class CancelButton extends StatelessWidget {
             onTap: () {
               if (isEnabled) onTap();
             },
-            color: isEnabled ? color : color?.withOpacity(0.3),
+            color: isEnabled ? color : color?.withValues(alpha: 0.3),
             textColor: textColor ?? Colors.white,
           ),
         ),

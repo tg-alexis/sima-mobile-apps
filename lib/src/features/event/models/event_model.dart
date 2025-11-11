@@ -38,14 +38,17 @@ class EventModel {
   String? date;
   String? startTime;
   String? endTime;
+  int? totalAccess;
 
-  EventModel(
-      {this.id,
-        this.name,
-        this.description,
-        this.date,
-        this.startTime,
-        this.endTime});
+  EventModel({
+    this.id,
+    this.name,
+    this.description,
+    this.date,
+    this.startTime,
+    this.endTime,
+    this.totalAccess,
+  });
 
   EventModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -54,6 +57,7 @@ class EventModel {
     date = json['date'];
     startTime = json['start_time'];
     endTime = json['end_time'];
+    totalAccess = json['total_access'];
   }
 
   Map<String, dynamic> toJson() {
@@ -64,6 +68,7 @@ class EventModel {
     data['date'] = date;
     data['start_time'] = startTime;
     data['end_time'] = endTime;
+    data['total_access'] = totalAccess;
     return data;
   }
 }
@@ -75,12 +80,13 @@ class PaginationResult {
   int? totalCount;
   int? totalPages;
 
-  PaginationResult(
-      {this.currentPage,
-        this.nextPage,
-        this.count,
-        this.totalCount,
-        this.totalPages});
+  PaginationResult({
+    this.currentPage,
+    this.nextPage,
+    this.count,
+    this.totalCount,
+    this.totalPages,
+  });
 
   PaginationResult.fromJson(Map<String, dynamic> json) {
     currentPage = json['currentPage'];

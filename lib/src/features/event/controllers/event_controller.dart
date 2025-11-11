@@ -12,7 +12,7 @@ class EventController extends ChangeNotifier {
   List<EventModel> _listEvents = [];
   bool _isLoading = false;
   bool _isEndPage = false;
-  int _page = 0;
+  bool _isScanning = false;
   EventModel? _event;
   String? _errorMessage;
   String? _searchValue;
@@ -30,7 +30,6 @@ class EventController extends ChangeNotifier {
 
   getEvent({bool newSearch = false}) async {
     if (newSearch) {
-      _page = 0;
       _isEndPage = false;
       _listEvents = [];
       notifyListeners();
@@ -38,29 +37,14 @@ class EventController extends ChangeNotifier {
 
     if (_isEndPage) return;
 
-    _page++;
-
     _isLoading = true;
 
     notifyListeners();
 
     var response = await _eventRepository.getEvents();
-
     response.when(
       failure: (String? message) {},
       onItem: (ListEventModel item) {
-        // if (item.result?.isEmpty == true) {
-        //   _isEndPage = true;
-        //   return;
-        // }
-        // if (item.count == _listEvents.length) {
-        //   _isEndPage = true;
-        //   return;
-        // }
-        // if (item.result != null && item.result!.isNotEmpty) {
-        //   _listEvents.addAll(item.result!);
-        // }
-
         _listEvents = item.result ?? [];
       },
     );
@@ -73,11 +57,13 @@ class EventController extends ChangeNotifier {
   Future<bool> checkAccess({required String attendeeId}) async {
     bool result = false;
 
+    _isScanning = true;
     _errorMessage = null;
     notifyListeners();
 
     if (_event == null) {
       _errorMessage = "Aucun évènement selectionné";
+      _isScanning = false;
       notifyListeners();
       return false;
     }
@@ -94,11 +80,12 @@ class EventController extends ChangeNotifier {
         },
         onItem: (AttendeeModel item) {
           result = true;
-          _totalScannedPasses++;
         },
       );
     } on Exception catch (e) {
       _errorMessage = e.toString();
+    } finally {
+      _isScanning = false;
     }
 
     notifyListeners();
@@ -106,9 +93,41 @@ class EventController extends ChangeNotifier {
     return result;
   }
 
-  void incrementScannedPasses() {
-    _totalScannedPasses++;
+  getStatistics() async {
+    if (_isLoading) return;
+
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      var response = await _eventRepository.getStatistics();
+      response.when(
+        failure: (String? message) {
+          _errorMessage = message;
+        },
+        onItem: (StatisticsModel item) {
+          _totalScannedPasses = item.totalAccess ?? 0;
+        },
+      );
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Méthode pour rafraîchir toutes les données
+  Future<void> refreshData() async {
+    // Ne pas rafraîchir si un scan est en cours
+    if (_isScanning || _isLoading) {
+      return;
+    }
+
+    _searchValue = null;
+    await getStatistics();
+    await getEvent(newSearch: true);
   }
 
   List<EventModel> get listEvents => _searchValue == null
@@ -123,9 +142,11 @@ class EventController extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  bool get isScanning => _isScanning;
+
   EventModel? get event => _event;
 
-  String? get errorMessage => _errorMessage;
-
   int get totalScannedPasses => _totalScannedPasses;
+
+  String? get errorMessage => _errorMessage;
 }

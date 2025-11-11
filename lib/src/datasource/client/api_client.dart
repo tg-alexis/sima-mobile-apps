@@ -16,6 +16,9 @@ abstract class ApiClient {
   @POST("/api/v2/attendees/check-access")
   Future<DataResponse<AttendeeModel>> checkAccess(@Body() AttendeeModel body);
 
+  @GET("/api/v2/statistic/access-statistics")
+  Future<DataResponse<StatisticsModel>> getStatistics();
+
   @POST("/api/v2/users")
   Future<DataResponse<UserModel>> createUser(@Body() UserModel body);
 
@@ -30,5 +33,4 @@ abstract class ApiClient {
 
   @GET("/api/v2/users?all=true")
   Future<DataResponse<ListUserModel>> getUsers();
-
 }

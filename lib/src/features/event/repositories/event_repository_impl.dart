@@ -10,7 +10,9 @@ class EventRepositoryImpl {
     try {
       bool hasConnection = await checkNetwork();
       if (!hasConnection) {
-        return DataResponse.failure("Veuillez vérifier votre connexion internet.");
+        return DataResponse.failure(
+          "Veuillez vérifier votre connexion internet.",
+        );
       }
 
       var response = await ApiClientInstance.instance.getEvents();
@@ -18,28 +20,68 @@ class EventRepositoryImpl {
       return response;
     } on DioException catch (e) {
       try {
-        return DataResponse.failure("${e.response?.data?['message'] ?? e.message}");
+        return DataResponse.failure(
+          "${e.response?.data?['message'] ?? e.message}",
+        );
       } catch (e) {
-        return DataResponse.failure("Service non disponible ! Veuillez réessayer plus tard");
+        return DataResponse.failure(
+          "Service non disponible ! Veuillez réessayer plus tard",
+        );
       }
     }
   }
 
-  Future<DataResponse<AttendeeModel>> checkAccess({required int eventId, required String attendeeId}) async {
+  Future<DataResponse<AttendeeModel>> checkAccess({
+    required int eventId,
+    required String attendeeId,
+  }) async {
     try {
       bool hasConnection = await checkNetwork();
       if (!hasConnection) {
-        return DataResponse.failure("Veuillez vérifier votre connexion internet.");
+        return DataResponse.failure(
+          "Veuillez vérifier votre connexion internet.",
+        );
       }
 
-      var response = await ApiClientInstance.instance.checkAccess(AttendeeModel(attendeeId: attendeeId, eventId: eventId));
+      var response = await ApiClientInstance.instance.checkAccess(
+        AttendeeModel(attendeeId: attendeeId, eventId: eventId),
+      );
 
       return response;
     } on DioException catch (e) {
       try {
-        return DataResponse.failure("${e.response?.data?['message'] ?? e.message}");
+        return DataResponse.failure(
+          "${e.response?.data?['message'] ?? e.message}",
+        );
       } catch (e) {
-        return DataResponse.failure("Service non disponible ! Veuillez réessayer plus tard");
+        return DataResponse.failure(
+          "Service non disponible ! Veuillez réessayer plus tard",
+        );
+      }
+    }
+  }
+
+  Future<DataResponse<StatisticsModel>> getStatistics() async {
+    try {
+      bool hasConnection = await checkNetwork();
+      if (!hasConnection) {
+        return DataResponse.failure(
+          "Veuillez vérifier votre connexion internet.",
+        );
+      }
+
+      var response = await ApiClientInstance.instance.getStatistics();
+
+      return response;
+    } on DioException catch (e) {
+      try {
+        return DataResponse.failure(
+          "${e.response?.data?['message'] ?? e.message}",
+        );
+      } catch (e) {
+        return DataResponse.failure(
+          "Service non disponible ! Veuillez réessayer plus tard",
+        );
       }
     }
   }

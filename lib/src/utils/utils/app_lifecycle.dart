@@ -5,14 +5,10 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
   final AsyncCallback? resumeCallBack;
   final AsyncCallback? suspendingCallBack;
 
-  LifecycleEventHandler({
-    this.resumeCallBack,
-    this.suspendingCallBack,
-  });
+  LifecycleEventHandler({this.resumeCallBack, this.suspendingCallBack});
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    print("state changed ${state.name}");
     switch (state) {
       case AppLifecycleState.resumed:
         if (resumeCallBack != null) {

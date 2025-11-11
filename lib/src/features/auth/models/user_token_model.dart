@@ -3,8 +3,11 @@ class UserTokenModel {
   String? refreshToken;
   bool? requiresPasswordChange;
 
-  UserTokenModel(
-      {this.accessToken, this.refreshToken, this.requiresPasswordChange});
+  UserTokenModel({
+    this.accessToken,
+    this.refreshToken,
+    this.requiresPasswordChange,
+  });
 
   UserTokenModel.fromJson(Map<String, dynamic> json) {
     accessToken = json['accessToken'];
@@ -13,10 +16,10 @@ class UserTokenModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['accessToken'] = this.accessToken;
-    data['refreshToken'] = this.refreshToken;
-    data['requiresPasswordChange'] = this.requiresPasswordChange;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['accessToken'] = accessToken;
+    data['refreshToken'] = refreshToken;
+    data['requiresPasswordChange'] = requiresPasswordChange;
     return data;
   }
 }
