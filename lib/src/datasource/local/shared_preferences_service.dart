@@ -11,21 +11,21 @@ class SharedPreferencesService {
     _sharedPreferences ??= await SharedPreferences.getInstance();
   }
 
-  static void saveToken(String? token) async {
+  static Future<void> saveToken(String? token) async {
     if (token == null) return;
     await getInstance();
-    _sharedPreferences?.setString('token', token);
+    await _sharedPreferences?.setString('token', token);
   }
 
-  static void saveRefreshToken(String? token) async {
+  static Future<void> saveRefreshToken(String? token) async {
     if (token == null) return;
     await getInstance();
-    _sharedPreferences?.setString('refresh_token', token);
+    await _sharedPreferences?.setString('refresh_token', token);
   }
 
-  static void saveUser(UserModel user) async {
+  static Future<void> saveUser(UserModel user) async {
     await getInstance();
-    _sharedPreferences?.setString("user", json.encode(user));
+    await _sharedPreferences?.setString("user", json.encode(user));
   }
 
   static Future<UserModel?> getUser() async {
@@ -47,8 +47,8 @@ class SharedPreferencesService {
     return data;
   }
 
-  static void clearAll() async {
+  static Future<void> clearAll() async {
     await getInstance();
-    _sharedPreferences?.clear();
+    await _sharedPreferences?.clear();
   }
 }

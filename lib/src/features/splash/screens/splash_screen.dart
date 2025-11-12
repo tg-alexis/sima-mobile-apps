@@ -68,11 +68,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _requestPermissions() async {
     // Demander la permission de la caméra
-    final cameraStatus = await requestPermission(Permission.camera);
+    //final cameraStatus = await requestPermission(Permission.camera);
+    final status = await Permission.camera.request();
 
-    if (!cameraStatus) {
+    if (!mounted) return;
+
+    if (status.isDenied || status.isPermanentlyDenied) {
       // Si la permission est refusée, afficher un dialog informatif
-      if (!mounted) return;
 
       await showDialog(
         context: context,

@@ -166,10 +166,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
   void _requestCameraPermission() async {
     // Vérifier le statut de la permission (déjà demandée au démarrage)
-    var result = await statusPermission(Permission.camera);
+    final status = await Permission.camera.request();
+
     if (!mounted) return;
 
-    if (!result) {
+    if (status.isDenied || status.isPermanentlyDenied) {
       // Si la permission n'est toujours pas accordée, proposer d'ouvrir les paramètres
       Dialogs.displayInfoDialog(
         context,

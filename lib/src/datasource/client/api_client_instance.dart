@@ -83,6 +83,7 @@ class ApiClientInstance {
                 'Invalid token',
                 'Token JWT expiré',
                 'Unauthorized',
+                'Token JWT expiré. Veuillez vous reconnecter',
               ];
 
               final shouldRefreshToken =

@@ -20,11 +20,11 @@ Future<bool> requestPermission(Permission setting) async {
   }
 }
 
-
 Future<bool> statusPermission(Permission setting) async {
   // setting.request() will return the status ALWAYS
   // if setting is already requested, it will return the status
   final result = await setting.status;
+  debugPrint("statusPermission => $result");
   if (kDebugMode) {
     print("statusPermission => $result");
   }

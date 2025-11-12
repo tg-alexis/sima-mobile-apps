@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../common/common.dart';
-import '../../datasource/datasource.dart';
 // import '../../features/features.dart';
-import '../../features/auth/auth.dart';
 import '../utils.dart';
 
 class AppExtension {
@@ -26,8 +24,13 @@ class AppExtension {
             color: Color(0xFFF06868),
             textColor: Colors.white,
             onTap: () {
-              SharedPreferencesService.clearAll();
-              NavigationUtil.pushAndRemoveUntil(context, const LoginScreen());
+              // Fermer le modal d'abord
+              NavigationUtil.pop(context);
+              // Utiliser le LogoutHandler pour gérer la déconnexion
+              LogoutHandler.triggerLogout(
+                reason: 'User manual logout',
+                message: 'Vous avez été déconnecté avec succès',
+              );
             },
           ),
           Spacers.min,

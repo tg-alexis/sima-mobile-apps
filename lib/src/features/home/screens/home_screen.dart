@@ -7,8 +7,6 @@ import 'package:sima/src/styles/colors/app_colors.dart';
 
 import '../../../../gen/assets.gen.dart';
 import '../../../common/common.dart';
-import '../../../datasource/datasource.dart';
-import '../../../event/event_bus.dart';
 import '../../../utils/utils.dart';
 import '../../auth/auth.dart';
 import '../../event/event.dart';
@@ -33,14 +31,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _eventController = ref.read(eventControllerProvider);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _loadInitialData();
-      EventBusInstance.instance.on<LogoutEvent>().listen((event) {
-        if (!mounted) return;
-        _authController.logout();
-        SharedPreferencesService.clearAll();
-        NavigationUtil.pushAndRemoveUntil(context, const LoginScreen());
-      });
-
-      // Démarrer le rafraîchissement automatique toutes les 5 minutes
       _startAutoRefresh();
     });
     super.initState();
